@@ -5,6 +5,8 @@ from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 import json
 
+
+
 def editor(request):
     return render(request, template_name='main/index.html')
 
