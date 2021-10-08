@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    {% load static %}
+
+    <script defer src="{% static 'main/face-api.min.js' %}"></script>
+    <script defer src="{% static 'main/render.js' %}"></script>
+</head>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100vw;
+        height: 100vh;
+        align-items: center;
+        display: flex;
+        background-color: aqua;
+    }
+
+    /* canvas {
+        position: absolute;
+    } */
+</style>
+
+<body>
+    <video id="video" width="720" height="560" autoplay muted></video><br>
+
+    <button onclick="PostClassUrl()"> post DATA</button><br>
+
+    <input type="text" id="classname" class="classname" name="classname" placeholder="Enter Your Class Name"><br>
+    <input type="text" id="url" name="url" class="url" placeholder="Enter Your URL">
+
+    <script>
+        function PostClassUrl() {
+
+            // axios.post(classname, url);
+            var data = new Object()
+            data.classname = document.getElementById('classname').value;
+            data.url = document.getElementById('url').value;
+            console.log(data)
+
+
+            let url1 = "https://meet.google.com/lookup/b6waqn6gkz";
+            url1 = "/url";
+            fetch(url1, {
+                method: 'POST',
+
+                headers: {
+                    'Accept': '*/*',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data),
+
+            })
+                .then(response => {
+                    return response;
+                })
+                .then(data => {
+
+                    console.log(data);
+
+
+                })
+                .catch(console.error);
+
+
+
+
+        }
+    </script>
+</body>
+
+</html>
