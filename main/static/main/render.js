@@ -45,18 +45,18 @@ video.addEventListener('playing', () => {
     const displaySize = { width: video.width, height: video.height }
     faceapi.matchDimensions(canvas, displaySize)
     setInterval(async () => {
-        const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+        const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
         if (detections.length == 1) {
-            console.log('Detected ')
+            console.log('Detected')
         }
-        else if (detections.length > 1) {
-            console.log('More than One Faces Detected')
-        }
+        // else if (detections.length > 1) {
+        //     console.log('More than One Faces Detected')
+        // }
         else {
             console.log('Face Not Detected')
 
         }
 
-    }, 100)
+    }, 500)
 })
 
