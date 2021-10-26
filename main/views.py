@@ -1,7 +1,8 @@
 from django.shortcuts import render,get_object_or_404
-from .models import MeetUrl
+from .models import MeetUrl,User
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+
 # Create your views here.
 
 import json
@@ -21,7 +22,7 @@ def getMeetUrl(request,name):
         url = 'not found'    
     return JsonResponse({'result':str(url) },safe=False,status=404)
 @csrf_exempt
-def setMeetUrl(request):
+def createMeetUrl(request):
     if request.method == 'POST':
         body_unicode = request.body.decode('utf-8')
         body = json.loads(body_unicode)
@@ -35,3 +36,35 @@ def setMeetUrl(request):
             return JsonResponse({'result':'error' },safe=False)    
     return JsonResponse({'result':'Method not allowed' },safe=False)
 
+@csrf_exempt
+def setMeetUrl(request,email,classname):
+    
+    if request.method == 'POST':
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+
+        email = body['email']
+        classname = body['classname']
+        url = body['url']
+        classn = get_object_or_404(MeetUrl,classname = classname)
+        user = get_object_or_404(User,email=email)
+        isOwner = user.classname.filter(classname__exact=classn).exists()
+        if not isOwner:
+            return JsonResponse({'result': "You don't have access" },safe=False)
+        classn.url = url
+        classn.save()
+        return JsonResponse({'result': "Updated successfully" },safe=False)
+
+   
+                    
+    return JsonResponse({'result':'Method not allowed' },safe=False)
+
+@csrf_exempt
+def checkUser(request,email):
+    user = get_object_or_404(User,email=email)
+    if(user.is_staff):
+        classes = list(user.classname.values('classname','url'))
+        print(classes)
+    
+        return JsonResponse({'result':user.is_staff , 'data':classes },safe=False)
+    return JsonResponse({'result':user.is_staff},safe=False)    

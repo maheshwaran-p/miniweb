@@ -4,6 +4,8 @@ from . import views
 urlpatterns = [
     path('', views.editor),
     path('url/<str:name>',views.getMeetUrl),
-    path('url',views.setMeetUrl)
+    path('url',views.createMeetUrl),
+    path('url/<str:email>/<str:classname>',views.setMeetUrl),
+    path('user/<str:email>',views.checkUser)
 
 ]
