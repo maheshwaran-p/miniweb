@@ -9,4 +9,4 @@ class MeetUrl(models.Model):
         return str(self.classname)
 
 class User(AbstractUser):
-    classname = models.ManyToManyField(MeetUrl)        
+    classname = models.ManyToManyField(MeetUrl,null=True,blank=True)        

@@ -7,7 +7,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 import json
 
-
+def Profile(request):
+    user = User.objects.get(email=request.user.email)
+    return render(request,'main/profile.html',{ 'data' : user })
 
 def editor(request):
     return render(request, template_name='main/index.html')
@@ -37,7 +39,7 @@ def createMeetUrl(request):
     return JsonResponse({'result':'Method not allowed' },safe=False)
 
 @csrf_exempt
-def setMeetUrl(request,email,classname):
+def setMeetUrl(request):
     
     if request.method == 'POST':
         body_unicode = request.body.decode('utf-8')

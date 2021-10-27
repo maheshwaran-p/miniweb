@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<title></title>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css"
+    integrity="sha384-3AB7yXWz4OeoZcPbieVW64vVXEwADiYyAEhwilzWsLw+9FgqpyjjStpPnpBO8o8S" crossorigin="anonymous">
+
+<body>
+  
+
+    {% load socialaccount %}
+
+
+   
+
+        <div class="form-container sign-in-container">
+            
+
+        <div class="overlay-container">
+
+            <form method="POST">
+                <h1>Sign UP</h1>
+                <br>
+                <span>Create your account</span>
+                <br>
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button>Sign Up</button>
+
+                <a href="{% url 'account_login' %}"><button class="ghost" id="signUp">Sign In</button></a>
+
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

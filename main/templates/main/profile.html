@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>profile</title>
+   <body >
+
+   <style>
+   #classes {
+       margin-left:100px;
+       
+       
+        background-color: red;
+
+   }
+   #students {
+       float:right;
+     
+       
+       background-color: blue;
+
+   }
+   #container {
+   
+       background-color: red;
+   }
+   * {
+  box-sizing: border-box;
+}
+
+.box {
+  float: left;
+  width: 33.33%;
+  padding: 50px;
+}
+
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+
+   </style>
+
+    {% if data.is_staff%}
+    <center><h1>   STAFF DETAILS      </h1> 
+    <a href="{% url 'account_logout' %}" > logout </a>
+    </center> 
+    {% else %}
+    <center><h1>   STUDENT DETAILS      </h1> 
+    <a href="{% url 'account_logout' %}" > logout </a>
+    </center>
+    {% endif %}
+
+    <div id="details" style="margin:120px">
+
+    UserName : {{ data.username }}
+    <br>
+    Email : {{ data.email }}
+    </div>
+
+    <div id="container"> 
+        <div class="box" id="students" >
+            cacaccdcsdc
+    
+        </div>
+        <div class="box" id="classes" >
+            {% if user.classname.count > 0 %}
+             <ul data-role="content">
+            {% for class in user.classname.all %}
+           
+            <li data-icon="images/setup.png" data-caption="setup.exe">{{class.classname}}</li>
+
+                
+
+            {% endfor %}
+                </ul>
+            {% else %}
+            Start by adding classes
+
+            {% endif %}
+        </div>
+        
+    </div>
+
+
+</body>
+
+</html>

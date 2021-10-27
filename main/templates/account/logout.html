@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+{% load i18n %}
+{% load static%}
+
+
+<head>
+    <title>{% trans "Sign Out" %}</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css"
+    integrity="sha384-3AB7yXWz4OeoZcPbieVW64vVXEwADiYyAEhwilzWsLw+9FgqpyjjStpPnpBO8o8S" crossorigin="anonymous">
+     <link href="{% static "main/bootstrap.min.css" %}" rel="stylesheet" >
+<script src= "{% static "main/bootstrap.min.js" %}"   ></script>
+
+</head>
+
+<body>
+
+
+<center>
+<h1>{% trans "Sign Out" %}</h1>
+
+<p>{% trans 'Are you sure you want to sign out?' %}</p>
+
+<form method="post" action="{% url 'account_logout' %}">
+  {% csrf_token %}
+  {% if redirect_field_value %}
+  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+  {% endif %}
+  <button type="submit" class="btn btn-primary">{% trans 'Sign Out' %}</button>
+</form>
+</center>
+
+</body>
+
+</html>
