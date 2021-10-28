@@ -95,12 +95,13 @@ def setMeetUrl(request):
         classname = body['classname']
         url = body['url']
         classn = get_object_or_404(Class,classname = classname)
+        Meet = MeetUrl.objects.get(classname=classname)
         user = get_object_or_404(User,email=email)
-        isOwner = user.classname.filter(classname__exact=classn).exists()
+        isOwner = Class.objects.filter(owner__exact=user).exists()
         if not isOwner:
             return JsonResponse({'result': "You don't have access" },safe=False)
-        classn.url = url
-        classn.save()
+        meet.url = url
+        meet.save()
         return JsonResponse({'result': "Updated successfully" },safe=False)
 
    
@@ -111,7 +112,8 @@ def setMeetUrl(request):
 def checkUser(request,email):
     user = get_object_or_404(User,email=email)
     if(user.is_staff):
-        classes = list(user.classname.values('classname','url'))
+        classes = list(Class.objects.filter(owner__exact=user).values('classname','description'))
+        # classes = list(user.classname.values('classname','url'))
         print(classes)
     
         return JsonResponse({'result':user.is_staff , 'data':classes },safe=False)
