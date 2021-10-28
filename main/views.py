@@ -138,7 +138,8 @@ def PostTiming(request):
         email = body['email']
         classname = body['classname']
         time = body['time']
-
+        if time < 0:
+            return JsonResponse({'status':200,'result':'Value should not be in negative' },safe=False)
         classn = get_object_or_404(Class,classname = classname)
         user = get_object_or_404(User,email=email)
         meet = MeetUrl.objects.filter(classname__exact=classn).order_by('-created').first()
@@ -153,7 +154,7 @@ def PostTiming(request):
                
         if toBeAdded:
             timings,isCreated = Timings.objects.get_or_create(classname=classn,student=user)
-            if timings.timeListened != None:
+            if timings.timeListened != None :
                 timings.timeListened = time + timings.timeListened
             else:
                 timings.timeListened = time    
@@ -187,6 +188,27 @@ def CalculateTime(request,pk):
     else:
         classe = Timings.objects.filter(classname__exact=classes.classname).filter(updated__gte=classes.starttime).filter(updated__lte=classes.endtime)
 
-    print(classe)
+  
     return render(request,'main/studentdetails.html',{ 'classname': classes.classname  ,'pk' : pk , 'students' : classe })    
 
+def population_chart(request,pk):
+    labels = []
+    data = []
+    classes = MeetUrl.objects.get(pk=pk)
+    print(classes.classname,classes.starttime,classes.endtime)
+    if not classes.endtime == 'None':
+        classe = Timings.objects.filter(classname__exact=classes.classname).filter(updated__gte=classes.starttime).filter(updated__lte=timezone.now())
+    else:
+        classe = list(Timings.objects.filter(classname__exact=classes.classname).filter(updated__gte=classes.starttime).filter(updated__lte=classes.endtime).values_list('student__email','timeListened'))
+
+    print(classe)
+
+
+    for entry in classe:
+        labels.append(entry.student.email)
+        data.append(entry.timeListened)
+    
+    return JsonResponse(data={
+        'labels': labels,
+        'data': data,
+    })

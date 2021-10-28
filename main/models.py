@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MaxValueValidator, MinValueValidator
 # Create your models here.
 
 
@@ -39,7 +40,7 @@ class MeetUrl(models.Model):
 class Timings(models.Model):   
     student = models.ForeignKey(User,on_delete = models.CASCADE) 
     classname = models.ForeignKey(Class,on_delete = models.CASCADE)
-    timeListened  = models.FloatField(null=True,blank=True) 
+    timeListened  = models.FloatField(null=True,blank=True, validators=[MinValueValidator(0.0)]) 
     updated = models.DateTimeField(auto_now_add = True)
 
     def __str__(self):

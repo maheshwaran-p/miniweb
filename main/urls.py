@@ -24,7 +24,7 @@ studentpattern = [
     path('user/<str:email>',views.checkUser),
     path('settime',views.PostTiming,name="posttime"),
     path('details/<int:pk>',views.CalculateTime,name="details"),
-
+    path("chart/<int:pk>",views.population_chart,name="chart"),
 ]
 
 urlpatterns = studentpattern +staffpattern
