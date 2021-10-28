@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>profile</title>
    <body >
-
+  <script>let prev = null</script>
    <style>
    #classes {
        margin-left:100px;
@@ -42,10 +42,26 @@
   display: table;
 }
 
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0,0.8,0,0.2);
+  transition: 0.5s;
+  width: 90%;
+ margin-bottom : 30px ;
+ background-color : white;
+}
+
+.card:hover {
+  box-shadow: 0 40px 80px 0 rgba(0,0,0,0.2);
+}
+
+.container {
+  padding: 2px 16px;
+}
+
 
    </style>
 
-    {% if data.is_staff%}
+    {% if user.is_staff %}
     <center><h1>   STAFF DETAILS      </h1> 
     <a href="{% url 'account_logout' %}" > logout </a>
     </center> 
@@ -57,30 +73,83 @@
 
     <div id="details" style="margin:120px">
 
-    UserName : {{ data.username }}
+    UserName : {{ user.username }}
     <br>
-    Email : {{ data.email }}
+    Email : {{ user.email }}
+    <br>
+   First Name : {{ user.first_name }}
+    <br>
+    Last Name : {{ user.last_name }}
     </div>
+
 
     <div id="container"> 
         <div class="box" id="students" >
-            cacaccdcsdc
+            {% for class in classes.all %}
+            <div  id="{{ class.pk }}" style="display:none" >
+            {% for students in class.user.all %}
+
+              
+            <div class="card"  > 
+             <div class="container">
+                <h4><b>{{ students }}</b></h4> 
+                
+                </div>
+             </div>
+            {% endfor %}
+            </div>
+            {% endfor %}
+                
+           
+
     
         </div>
+        <script>
+        
+        function showstudents(pk){
+         
+          if(prev !== null){
+            document.getElementById(prev).style.display = 'none'
+            document.getElementById(pk).style.display = 'block'
+
+          }
+          else{
+            
+            document.getElementById(pk).style.display = 'block'
+          }
+          prev  = pk
+          
+
+        }
+        </script>
         <div class="box" id="classes" >
-            {% if user.classname.count > 0 %}
-             <ul data-role="content">
-            {% for class in user.classname.all %}
+            {% if classes.count > 0 %}
+             
+            {% for classs in classes.all %}
            
-            <li data-icon="images/setup.png" data-caption="setup.exe">{{class.classname}}</li>
+            <div class="card" onclick=" showstudents('{{ classs.pk }}')  " > 
+             <div class="container">
+                <h4><b>{{classs.classname}}</b></h4> 
+                <a href=" {% url  'updateclass' classs.pk  %} " target="_blank">update</a> 
+                </div>
+             </div>
 
                 
 
             {% endfor %}
-                </ul>
+                
             {% else %}
-            Start by adding classes
+            Start by adding classes ...
 
+            {% endif %}
+
+
+
+                {% if user.is_staff %}
+           
+                <a href=" {% url  'createclass'  %} "><button class="btn btn-primary">  Add Class </button> </a>
+            {% else %}
+              <a><button class="btn btn-primary">  Join Class </button> </a>
             {% endif %}
         </div>
         
@@ -90,3 +159,5 @@
 </body>
 
 </html>
+
+
