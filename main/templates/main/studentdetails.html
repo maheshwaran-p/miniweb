@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{  classname }}</title>
+   <body >
+   <style>
+   #classes {
+       margin-left:100px;
+       
+       
+        background-color: red;
+
+   }
+   #students {
+       float:right;
+     
+       
+       background-color: blue;
+
+   }
+   #container {
+   
+       background-color: red;
+   }
+   * {
+  box-sizing: border-box;
+}
+
+.box {
+  float: left;
+  width: 33.33%;
+  padding: 50px;
+}
+
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0,0.8,0,0.2);
+  transition: 0.5s;
+  width: 90%;
+ margin-bottom : 30px ;
+ background-color : white;
+}
+
+.card:hover {
+  box-shadow: 0 40px 80px 0 rgba(0,0,0,0.2);
+}
+
+.container {
+  padding: 2px 16px;
+}
+
+
+   </style>
+
+    
+
+
+    <div id="container"> 
+        <div class="box" id="classes" >
+            
+         
+            {% for student in students %}
+
+              
+            <div class="card" > 
+             <div class="container">
+                <h4><b>{{ student.student.email }}</b></h4> 
+                <h4><b>{{ student.timeListened  }} min</b></h4>
+                
+              </div>
+             </div>
+            {% endfor %}
+            </div>
+           
+          
+       
+        
+        
+    </div>
+
+
+</body>
+
+</html>
+
+

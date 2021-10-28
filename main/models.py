@@ -22,6 +22,9 @@ class Class(models.Model):
 class MeetUrl(models.Model):
     classname = models.ForeignKey(Class,on_delete = models.CASCADE)
     url = models.URLField(max_length=115,null=True,blank=True)
+    starttime = models.DateTimeField(null=True,blank=True)
+    endtime = models.DateTimeField(null=True,blank=True)
+    created = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return str(self.classname)
 
@@ -36,7 +39,7 @@ class MeetUrl(models.Model):
 class Timings(models.Model):   
     student = models.ForeignKey(User,on_delete = models.CASCADE) 
     classname = models.ForeignKey(Class,on_delete = models.CASCADE)
-    timeListened  = models.FloatField() 
+    timeListened  = models.FloatField(null=True,blank=True) 
     updated = models.DateTimeField(auto_now_add = True)
 
     def __str__(self):

@@ -1,5 +1,5 @@
 from django.shortcuts import render,get_object_or_404
-from .models import Class,User,MeetUrl
+from .models import Class,User,MeetUrl,Timings
 from .forms import MeetUrlModelForm
 
 from django.http import JsonResponse,HttpResponseRedirect
@@ -48,42 +48,29 @@ def getMeetUrl(request,name):
     return JsonResponse({'result':str(url) },safe=False,status=404)
 
 
-
-class ClassCreateView(LoginRequiredMixin,CreateView):
-    model = Class
-    login_url = '/accounts/login/'
-    fields = ['classname','description']
-    template_name = 'main/create.html'
-    success_url = '/url'
-    def form_valid(self, form):
-        form.instance.owner = self.request.user
-        self.object = form.save(commit=False)
-        self.object.save()
-        return HttpResponseRedirect(self.get_success_url())
-
-def createMeetUrl(request):
+# def createMeetUrl(request):
     
-    if request.method == 'POST':
-        form = MeetUrlModelForm(request.POST)
-        if form.is_valid():
-            name = form.cleaned_data['classname']
-            form.save()
-            print("saved")
-            # classname = Class.objects.get(classname=name)
-            # user  = User.objects.get(email=request.user.email)
-            # owner = Owner.objects.create(user=user,classname=classname)
+#     if request.method == 'POST':
+#         form = MeetUrlModelForm(request.POST)
+#         if form.is_valid():
+#             name = form.cleaned_data['classname']
+#             form.save()
+#             print("saved")
+#             # classname = Class.objects.get(classname=name)
+#             # user  = User.objects.get(email=request.user.email)
+#             # owner = Owner.objects.create(user=user,classname=classname)
                 
             
             
-            # except:
-            #     return render(request, 'main/create.html', {'form': form })  
+#             # except:
+#             #     return render(request, 'main/create.html', {'form': form })  
            
             
-        return render(request, 'main/create.html', {'form': form })    
-    else:
-        form = MeetUrlModelForm()           
-    return render(request, 'main/create.html', {'form': form })
-
+#         return render(request, 'main/create.html', {'form': form })    
+#     else:
+#         form = MeetUrlModelForm()           
+#     return render(request, 'main/create.html', {'form': form })
+from django.utils import timezone
 @csrf_exempt
 def setMeetUrl(request):
     
@@ -101,20 +88,105 @@ def setMeetUrl(request):
         if not isOwner:
             return JsonResponse({'result': "You don't have access" },safe=False)
         meet.url = url
+        meet.starttime = timezone.now()
         meet.save()
         return JsonResponse({'result': "Updated successfully" },safe=False)
-
-   
-                    
     return JsonResponse({'result':'Method not allowed' },safe=False)
 
 @csrf_exempt
+def UnsetMeetUrl(request):
+    
+    if request.method == 'POST':
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+
+        email = body['email']
+        classname = body['classname']
+        url = body['url']
+        classn = get_object_or_404(Class,classname = classname)
+        Meet = MeetUrl.objects.get(classname=classname)
+        user = get_object_or_404(User,email=email)
+        isOwner = Class.objects.filter(owner__exact=user).exists()
+        if not isOwner:
+            return JsonResponse({'result': "You don't have access" },safe=False)
+        meet.url = url
+        meet.endtime = timezone.now()
+        meet.save()
+        return JsonResponse({'result': "Updated successfully" },safe=False)
+    return JsonResponse({'result':'Method not allowed' },safe=False)    
+
+@csrf_exempt
 def checkUser(request,email):
-    user = get_object_or_404(User,email=email)
+    try:
+        user = User.objects.get(email=email)
+    except:
+        return JsonResponse({'status':404,'result':' Please create an account '},safe=False)
+
     if(user.is_staff):
         classes = list(Class.objects.filter(owner__exact=user).values('classname','description'))
-        # classes = list(user.classname.values('classname','url'))
-        print(classes)
     
-        return JsonResponse({'result':user.is_staff , 'data':classes },safe=False)
-    return JsonResponse({'result':user.is_staff},safe=False)    
+        
+    else:
+        classes = list(Class.objects.filter(user__exact=user).values('classname','description') )    
+    return JsonResponse({'status':200,'result':user.is_staff , 'data':classes },safe=False)   
+@csrf_exempt
+def PostTiming(request):
+    if request.method == 'POST':
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+
+        email = body['email']
+        classname = body['classname']
+        time = body['time']
+
+        classn = get_object_or_404(Class,classname = classname)
+        user = get_object_or_404(User,email=email)
+        meet = MeetUrl.objects.filter(classname__exact=classn).order_by('-created').first()
+        if meet.endtime != None:
+            difference = timezone.now() - meet.endtime 
+    
+            toBeAdded = True if difference.seconds <= 6000  else  False
+            
+        else:
+            toBeAdded = True 
+
+               
+        if toBeAdded:
+            timings,isCreated = Timings.objects.get_or_create(classname=classn,student=user)
+            if timings.timeListened != None:
+                timings.timeListened = time + timings.timeListened
+            else:
+                timings.timeListened = time    
+
+            timings.save()
+            return JsonResponse({'status':200,'result':'updated' },safe=False)   
+        else:
+            return JsonResponse({'status':200,'result':'Sorry out of time' },safe=False)
+         
+    else:
+        return JsonResponse({'status':404,'result':'Method not allowed' },safe=False)    
+
+
+        
+
+
+
+
+def AllClasses(request,classname):
+    classes = Class.objects.get(classname=classname)
+    if classes.owner == request.user:
+        classes = MeetUrl.objects.filter(classname__exact=classes).order_by('-endtime')
+        print(classes)
+    return render(request,'main/dashboard.html',{ 'data' : classes , 'classname' : classname })
+
+def CalculateTime(request,pk):
+    classes = MeetUrl.objects.get(pk=pk)
+    print(classes.classname,classes.starttime,classes.endtime)
+    if not classes.endtime == 'None':
+        classe = Timings.objects.filter(classname__exact=classes.classname).filter(updated__gte=classes.starttime).filter(updated__lte=timezone.now())
+    else:
+        classe = Timings.objects.filter(classname__exact=classes.classname).filter(updated__gte=classes.starttime).filter(updated__lte=classes.endtime)
+
+    print(classe)
+    return render(request,'main/studentdetails.html',{ 'classname': classes.classname  ,'pk' : pk , 'students' : classe })    
+

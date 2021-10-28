@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>profile</title>
+    <title>{{  classname }}</title>
    <body >
   <script>let prev = null</script>
    <style>
@@ -62,13 +62,9 @@
    </style>
 
     {% if user.is_staff %}
-    <center><h1>   STAFF DETAILS      </h1> 
+    <center><h1>   CLASS DETAILS      </h1> 
     <a href="{% url 'account_logout' %}" > logout </a>
     </center> 
-    {% else %}
-    <center><h1>   STUDENT DETAILS      </h1> 
-    <a href="{% url 'account_logout' %}" > logout </a>
-    </center>
     {% endif %}
 
     <div id="details" style="margin:120px">
@@ -123,15 +119,21 @@
         }
         </script>
         <div class="box" id="classes" >
-            {% if classes.count > 0 %}
+            {% if data.count > 0 %}
              
-            {% for classs in classes.all %}
+            {% for classs in data %}
            
-            <div class="card" onclick=" showstudents('{{ classs.pk }}')  " > 
+           <a href=" {% url 'details' classs.pk  %} " target="_blank"> <div class="card" onclick=" showstudents('{{ classs.pk }}')  " > 
              <div class="container">
-                <h4><b>{{classs.classname}}</b></h4> 
-                <a href=" {% url  'classes' classs.classname  %} " target="_blank">show</a> 
-                <a href=" {% url  'updateclass' classs.pk  %} " target="_blank">update</a> 
+                <h4><b>{{ classs.classname }}</b></h4>
+                created :<p>{{ classs.created  }}</p>
+                start time :<p><b>{{ classs.starttime }}</b></p>
+                {% if not classs.endtime  == None %}
+                end time: <p><b>{{ classs.endtime }}</b></p>  
+                {% else %}
+                end time : <p><b>Ongoing...</b></p>
+                 {% endif %}
+             
                 </div>
              </div>
 
@@ -140,19 +142,15 @@
             {% endfor %}
                 
             {% else %}
-            Start by adding classes ...
+            No classes yet started
 
             {% endif %}
 
 
 
-                {% if user.is_staff %}
-           
-                <a href=" {% url  'createclass'  %} "><button class="btn btn-primary">  Add Class </button> </a>
-            {% else %}
-              <a><button class="btn btn-primary">  Join Class </button> </a>
-            {% endif %}
+               
         </div>
+        </a>
         
     </div>
 
