@@ -11,7 +11,7 @@
        margin-left:100px;
        
        
-        background-color: red;
+        background-color: white;
 
    }
    #students {
@@ -57,7 +57,27 @@
   padding: 2px 16px;
 }
 
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
 
+td {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+th{
+   border: 1px solid #dddddd;
+ 
+  padding: 8px;
+   background-color: #dddddd;
+}
+
+{% comment %} tr:nth-child(even) {
+  background-color: #dddddd;
+}  {% endcomment %}
    </style>
 
     
@@ -66,18 +86,29 @@
     <div id="container"> 
         <div class="box" id="classes" >
             
+          <table>
+          <tr>
+          <th> Student </th>
+          <th> Student Email </th>
+          <th> Listened Time (min)</th>
+          </tr>
          
             {% for student in students %}
 
               
-            <div class="card" > 
-             <div class="container">
-                <h4><b>{{ student.student.email }}</b></h4> 
-                <h4><b>{{ student.timeListened  }} min</b></h4>
+            
+              <tr>
+                <td><i>{{ student.student.username }}</i></td>
+                 <td><i>{{ student.student.email }}</i></td>
+                <td><i>{{ student.timeListened  }} </i></td>
                 
-              </div>
-             </div>
+              
+           
+             
+              </tr>
             {% endfor %}
+           
+            </table>
             </div>
            
           
@@ -112,7 +143,7 @@
             data: {
               labels: data.labels,
               datasets: [{
-                label: 'Population',
+                label: 'Attendence',
                 backgroundColor: 'red',
                 data: data.data
               }]          
@@ -122,8 +153,7 @@
                scales: {
                 yAxes : [{
                     ticks : {
-                            
-                        min : 1
+                          min : 1
                     }
                 }]
             },

@@ -5,7 +5,7 @@ from . import views,staffview
 
 
 staffpattern = [
-    path('profile',staffview.Profile),
+    path('profile',staffview.Profile,name="profile"),
     path('createclass',staffview.ClassCreateView.as_view(),name="createclass"),
     path('updateclass/<int:pk>',staffview.ClassUpdateView.as_view(),name="updateclass"),
 

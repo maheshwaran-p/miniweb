@@ -71,7 +71,7 @@
     </center>
     {% endif %}
 
-    <div id="details" style="margin:120px">
+    <div id="details" style="margin:20px">
 
     UserName : {{ user.username }}
     <br>
@@ -130,7 +130,7 @@
             <div class="card" onclick=" showstudents('{{ classs.pk }}')  " > 
              <div class="container">
                 <h4><b>{{classs.classname}}</b></h4> 
-                <a href=" {% url  'classes' classs.classname  %} " target="_blank">show</a> 
+                <a href=" {% url  'classes' classs.classname  %} " target="_blank">show</a> <hr>
                 <a href=" {% url  'updateclass' classs.pk  %} " target="_blank">update</a> 
                 </div>
              </div>

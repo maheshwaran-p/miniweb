@@ -89,7 +89,9 @@ def setMeetUrl(request):
             return JsonResponse({'result': "You don't have access" },safe=False)
         meet.url = url
         meet.starttime = timezone.now()
+       
         meet.save()
+        print(meet.starttime,meet.created)
         return JsonResponse({'result': "Updated successfully" },safe=False)
     return JsonResponse({'result':'Method not allowed' },safe=False)
 
@@ -113,7 +115,8 @@ def UnsetMeetUrl(request):
         meet.endtime = timezone.now()
         meet.save()
         return JsonResponse({'result': "Updated successfully" },safe=False)
-    return JsonResponse({'result':'Method not allowed' },safe=False)    
+    return JsonResponse({'result':'Method not allowed' },safe=False)  
+
 
 @csrf_exempt
 def checkUser(request,email):
@@ -129,6 +132,8 @@ def checkUser(request,email):
     else:
         classes = list(Class.objects.filter(user__exact=user).values('classname','description') )    
     return JsonResponse({'status':200,'result':user.is_staff , 'data':classes },safe=False)   
+
+
 @csrf_exempt
 def PostTiming(request):
     if request.method == 'POST':
@@ -174,39 +179,36 @@ def PostTiming(request):
 
 
 def AllClasses(request,classname):
-    classes = Class.objects.get(classname=classname)
-    if classes.owner == request.user:
-        classes = MeetUrl.objects.filter(classname__exact=classes).order_by('-endtime')
+    classe = Class.objects.get(classname=classname)
+    if classe.owner == request.user:
+        classes = MeetUrl.objects.filter(classname__exact=classe).order_by('-endtime')
         print(classes)
-    return render(request,'main/dashboard.html',{ 'data' : classes , 'classname' : classname })
+    return render(request,'main/dashboard.html',{ 'data' : classes , 'classname' : classe })
+
 
 def CalculateTime(request,pk):
     classes = MeetUrl.objects.get(pk=pk)
-    print(classes.classname,classes.starttime,classes.endtime)
-    if not classes.endtime == 'None':
-        classe = Timings.objects.filter(classname__exact=classes.classname).filter(updated__gte=classes.starttime).filter(updated__lte=timezone.now())
-    else:
-        classe = Timings.objects.filter(classname__exact=classes.classname).filter(updated__gte=classes.starttime).filter(updated__lte=classes.endtime)
 
-  
+    if  classes.endtime == 'None' or classes.endtime == None or classes.endtime == '' :
+        classe = Timings.objects.filter(classname__exact=classes.classname).filter(updated__gte=classes.starttime).filter(updated__lte=timezone.now()).order_by('-timeListened')
+    else:
+        classe = Timings.objects.filter(classname__exact=classes.classname).filter(updated__gte=classes.starttime).filter(updated__lte=classes.endtime).order_by('-timeListened')
+
+
     return render(request,'main/studentdetails.html',{ 'classname': classes.classname  ,'pk' : pk , 'students' : classe })    
 
 def population_chart(request,pk):
     labels = []
     data = []
     classes = MeetUrl.objects.get(pk=pk)
-    print(classes.classname,classes.starttime,classes.endtime)
-    if not classes.endtime == 'None':
-        classe = Timings.objects.filter(classname__exact=classes.classname).filter(updated__gte=classes.starttime).filter(updated__lte=timezone.now())
+  
+    if classes.endtime == 'None' or classes.endtime == None or classes.endtime == '' :
+        classe = Timings.objects.filter(classname__exact=classes.classname).filter(updated__gte=classes.starttime).filter(updated__lte=timezone.now()).order_by('-timeListened')
     else:
-        classe = list(Timings.objects.filter(classname__exact=classes.classname).filter(updated__gte=classes.starttime).filter(updated__lte=classes.endtime).values_list('student__email','timeListened'))
-
-    print(classe)
-
-
+        classe = Timings.objects.filter(classname__exact=classes.classname).filter(updated__gte=classes.starttime).filter(updated__lte=classes.endtime).order_by('-timeListened')
     for entry in classe:
-        labels.append(entry.student.email)
-        data.append(entry.timeListened)
+        labels.append(entry.student.username)
+        data.append(entry.timeListened)        
     
     return JsonResponse(data={
         'labels': labels,
