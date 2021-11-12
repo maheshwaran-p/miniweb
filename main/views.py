@@ -82,14 +82,13 @@ def setMeetUrl(request):
         classname = body['classname']
         url = body['url']
         classn = get_object_or_404(Class,classname = classname)
-        Meet = MeetUrl.objects.get(classname=classname)
+        meet = MeetUrl.objects.get(classname=classn)
         user = get_object_or_404(User,email=email)
         isOwner = Class.objects.filter(owner__exact=user).exists()
         if not isOwner:
             return JsonResponse({'result': "You don't have access" },safe=False)
         meet.url = url
         meet.starttime = timezone.now()
-       
         meet.save()
         print(meet.starttime,meet.created)
         return JsonResponse({'result': "Updated successfully" },safe=False)
@@ -183,18 +182,21 @@ def AllClasses(request,classname):
     if classe.owner == request.user:
         classes = MeetUrl.objects.filter(classname__exact=classe).order_by('-endtime')
         print(classes)
+    else :
+        return JsonResponse('You have no access',safe=False)    
     return render(request,'main/dashboard.html',{ 'data' : classes , 'classname' : classe })
 
 
 def CalculateTime(request,pk):
     classes = MeetUrl.objects.get(pk=pk)
-
+    print(classes)
     if  classes.endtime == 'None' or classes.endtime == None or classes.endtime == '' :
-        classe = Timings.objects.filter(classname__exact=classes.classname).filter(updated__gte=classes.starttime).filter(updated__lte=timezone.now()).order_by('-timeListened')
+        classe = Timings.objects.filter(classname__exact=classes.classname).order_by('-timeListened')
     else:
-        classe = Timings.objects.filter(classname__exact=classes.classname).filter(updated__gte=classes.starttime).filter(updated__lte=classes.endtime).order_by('-timeListened')
+        print(classes.starttime)
+        classe = Timings.objects.filter(classname__exact=classes.classname).order_by('-timeListened')
 
-
+    print(classe)
     return render(request,'main/studentdetails.html',{ 'classname': classes.classname  ,'pk' : pk , 'students' : classe })    
 
 def population_chart(request,pk):
@@ -203,9 +205,9 @@ def population_chart(request,pk):
     classes = MeetUrl.objects.get(pk=pk)
   
     if classes.endtime == 'None' or classes.endtime == None or classes.endtime == '' :
-        classe = Timings.objects.filter(classname__exact=classes.classname).filter(updated__gte=classes.starttime).filter(updated__lte=timezone.now()).order_by('-timeListened')
+        classe = Timings.objects.filter(classname__exact=classes.classname).order_by('-timeListened')
     else:
-        classe = Timings.objects.filter(classname__exact=classes.classname).filter(updated__gte=classes.starttime).filter(updated__lte=classes.endtime).order_by('-timeListened')
+        classe = Timings.objects.filter(classname__exact=classes.classname).order_by('-timeListened')
     for entry in classe:
         labels.append(entry.student.username)
         data.append(entry.timeListened)        
