@@ -99,7 +99,7 @@
             {% if data.count > 0 %}
              
             {% for classs in data %}
-           <div class="card" onclick=" showstudents('{{ classs.pk }}')  " > 
+           <div class="card" > 
              <div class="container">
 
              <div  style="float:left">
@@ -131,15 +131,16 @@
                 end time: <b>{{ classs.endtime  }}</b> 
                 {% else %}
                 end time : <b>Ongoing...</b>
-                <button onclick="endCall()">End timing</button>
+                <button onclick="endCall('{{ classs.url }}')">End timing</button>
 
                 <script>
-                async function endCall(){
+                async function endCall(urls){
+                  console.log("called endcall");
                   data = new Object()
-                data.time = total
-                data.email = {{ user.email }}
-                data.classname = {{ classname }}
-                 await fetch('/unsettime', {
+                data.url = urls
+                data.email =' {{ user.email }}'
+                data.classname = '{{ classname }}'
+                 await fetch('/unseturl/', {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
@@ -148,8 +149,8 @@
                 body: JSON.stringify(data)
             }).then(response => response.json())
                 .then(data => {
-                    console.log("set Interval")
-                    console.log(data.total);
+                    if (data.status == 201)
+                      location.reload()
                 });
                 }
 

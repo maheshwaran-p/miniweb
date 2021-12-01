@@ -16,6 +16,7 @@ staffpattern = [
 
 studentpattern = [
     path('camera', views.editor),
+    path("register",views.register),
    
     path('url/<str:name>',views.getMeetUrl),
     path('classes/<str:classname>',views.AllClasses,name="classes"),

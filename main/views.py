@@ -1,12 +1,13 @@
 from django.shortcuts import render,get_object_or_404
 from .models import Class,User,MeetUrl,Timings
-from .forms import MeetUrlModelForm
+from .forms import MeetUrlModelForm,CustomUserCreationForm
 
 from django.http import JsonResponse,HttpResponseRedirect
 from django.views.generic import CreateView,UpdateView
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.forms import UserCreationForm
 
 import json
 
@@ -18,7 +19,26 @@ import json
 
 
 
-
+def register(request):  
+    
+    if request.method == 'POST':  
+        print('enterde post')
+        form = CustomUserCreationForm()  
+        if form.is_valid(): 
+            print('valid')
+            form.save() 
+            return render(request, 'account/signup.html', { 'form':form  }) 
+        else:
+             print('not valid')
+        return render(request, 'account/signup.html', { 'form':form  }) 
+                 
+    
+    else:  
+        form = CustomUserCreationForm()  
+    context = {  
+        'form':form  
+    }  
+    return render(request, 'account/signup.html', context)  
 
 
 
@@ -95,27 +115,33 @@ def setMeetUrl(request):
         return JsonResponse({'result': "Updated successfully" },safe=False)
     return JsonResponse({'result':'Method not allowed' },safe=False)
 
+
+
+
+
+
 @csrf_exempt
 def UnsetMeetUrl(request):
-    
+    print("called")
     if request.method == 'POST':
         body_unicode = request.body.decode('utf-8')
         body = json.loads(body_unicode)
 
-        email = body['email']
+        email = body['email'].strip()
         classname = body['classname']
-        url = body['url']
+        url = body['url'].strip()
         classn = get_object_or_404(Class,classname = classname)
-        Meet = MeetUrl.objects.get(classname=classname)
+        meet = MeetUrl.objects.filter(classname__exact=classn).order_by('created').first()
         user = get_object_or_404(User,email=email)
         isOwner = Class.objects.filter(owner__exact=user).exists()
         if not isOwner:
-            return JsonResponse({'result': "You don't have access" },safe=False)
+            return JsonResponse({'status':200,'result': "You don't have access" },safe=False)
         meet.url = url
         meet.endtime = timezone.now()
         meet.save()
-        return JsonResponse({'result': "Updated successfully" },safe=False)
-    return JsonResponse({'result':'Method not allowed' },safe=False)  
+        
+        return JsonResponse({'status':201,'result': "Updated successfully" },safe=False)
+    return JsonResponse({'status':404,'esult':'Method not allowed' },safe=False)  
 
 
 @csrf_exempt
