@@ -20,8 +20,8 @@ studentpattern = [
    
     path('url/<str:name>',views.getMeetUrl),
     path('classes/<str:classname>',views.AllClasses,name="classes"),
-    path('seturl/',views.setMeetUrl),
-    path('unseturl/',views.UnsetMeetUrl),
+    path('seturl',views.setMeetUrl),
+    path('unseturl',views.UnsetMeetUrl),
     path('user/<str:email>',views.checkUser),
     path('settime',views.PostTiming,name="posttime"),
     path('details/<int:pk>',views.CalculateTime,name="details"),
