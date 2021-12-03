@@ -1,11 +1,32 @@
 from django import forms
-from .models import MeetUrl,User
+from .models import MeetUrl,User,Class
 from django.contrib.auth.forms import UserCreationForm  
 class MeetUrlModelForm(forms.ModelForm):
     class Meta:
         model = MeetUrl
         fields = '__all__'
 
+
+
+class JoinClassForm(forms.Form):
+    classname = forms.CharField(required=False,label="Classname")
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user")
+        super(JoinClassForm, self).__init__(*args, **kwargs)
+        
+
+    def clean(self):
+        form_data = self.cleaned_data
+        classname = form_data["classname"]
+        print(classname)
+        if Class.objects.filter(classname__exact=classname).exists():
+            classObject = Class.objects.get(classname=classname)
+            classObject.user.add(self.user)
+        else:    
+            self._errors["classname"] = ["No such class exist.check classname"] # Will raise a error message
+            #del form_data['classname']
+        return form_data
+        
 
 # class CustomUserCreationForm(forms.ModelForm):
     

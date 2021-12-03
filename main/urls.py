@@ -1,7 +1,6 @@
 from django.urls import path, include
 from django.contrib import admin
-from . import views,staffview
-
+from . import views,staffview,studentview
 
 
 staffpattern = [
@@ -11,10 +10,18 @@ staffpattern = [
 
 ]
 
-
-
-
 studentpattern = [
+  
+    path('joinclass',studentview.AddClass,name="joinclass"),
+
+
+]
+
+
+
+
+
+pattern = [
     path('camera', views.editor),
     path("register",views.register),
    
@@ -28,5 +35,5 @@ studentpattern = [
     path("chart/<int:pk>",views.population_chart,name="chart"),
 ]
 
-urlpatterns = studentpattern +staffpattern
+urlpatterns = studentpattern + staffpattern +pattern
 

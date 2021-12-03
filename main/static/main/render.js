@@ -7,6 +7,9 @@ Promise.all([
     faceapi.nets.faceExpressionNet.loadFromUri('/static')
 ]).then(startVideo)
 
+var timedetected = document.getElementById("timedetected")
+
+var time = 0
 function startVideo() {
     const video = document.getElementById('video')
     console.log("startVIDEO");
@@ -46,8 +49,10 @@ video.addEventListener('playing', () => {
     faceapi.matchDimensions(canvas, displaySize)
     setInterval(async () => {
         const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
-        if (detections.length == 1) {
+        if (detections.length >= 1) {
             console.log('Detected')
+            time+=500
+            timedetected.innerHTML = `time: ${time/2000}`
         }
         // else if (detections.length > 1) {
         //     console.log('More than One Faces Detected')

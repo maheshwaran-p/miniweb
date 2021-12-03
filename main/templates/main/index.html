@@ -27,51 +27,11 @@
 </style>
 
 <body>
-    <video id="video" width="720" height="560" autoplay muted></video><br>
-
-    <button onclick="PostClassUrl()"> post DATA</button><br>
-
-    <input type="text" id="classname" class="classname" name="classname" placeholder="Enter Your Class Name"><br>
-    <input type="text" id="url" name="url" class="url" placeholder="Enter Your URL">
-
-    <script>
-        function PostClassUrl() {
-
-            // axios.post(classname, url);
-            var data = new Object()
-            data.classname = document.getElementById('classname').value;
-            data.url = document.getElementById('url').value;
-            console.log(data)
+    <video id="video" width="90%" height="90%" autoplay muted></video>
+    Time = <span id="timedetected"> </span>
 
 
-            let url1 = "https://meet.google.com/lookup/b6waqn6gkz";
-            url1 = "/url";
-            fetch(url1, {
-                method: 'POST',
-
-                headers: {
-                    'Accept': '*/*',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data),
-
-            })
-                .then(response => {
-                    return response;
-                })
-                .then(data => {
-
-                    console.log(data);
-
-
-                })
-                .catch(console.error);
-
-
-
-
-        }
-    </script>
+   
 </body>
 
 </html>

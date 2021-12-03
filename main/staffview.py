@@ -14,9 +14,14 @@ import json
 def Profile(request):
     
     user = User.objects.get(email=request.user.email)
-    classes = Class.objects.filter(user__exact= user)
+    
 
-    return render(request,'main/profile.html',{ 'user' : user , 'classes' : classes })
+    if user.is_staff :
+        classes = Class.objects.filter(owner__exact= user)
+        return render(request,'main/profile_staff.html',{ 'user' : user , 'classes' : classes })
+    else:
+        classes = Class.objects.filter(user__exact= user)
+        return render(request,'main/profile_student.html',{ 'user' : user , 'classes' : classes })      
 
 
 class ClassCreateView(LoginRequiredMixin,CreateView):
@@ -24,7 +29,7 @@ class ClassCreateView(LoginRequiredMixin,CreateView):
     login_url = '/accounts/login/'
     fields = ['classname','description']
     template_name = 'main/create.html'
-    success_url = '/url'
+    success_url = '/profile_staff'
     def form_valid(self, form):
         form.instance.owner = self.request.user
         self.object = form.save(commit=False)
@@ -36,7 +41,7 @@ class ClassUpdateView(LoginRequiredMixin,UpdateView):
     login_url = '/accounts/login/'
     fields = ['classname','description']
     template_name = 'main/create.html'
-    success_url = '/url'
+    success_url = '/profile_staff'
     def form_valid(self, form):
         form.instance.owner = self.request.user
         self.object = form.save(commit=False)
